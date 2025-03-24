@@ -5,10 +5,42 @@ const API = "https://alchemy-kd0l.onrender.com";
 const startPlayer = "/start?player=";
 const POST = "/answer";
 
+const firstChallengeCode = "☉☿☽♂☉";
+
 async function start() {
     const startingChallenge = await fetchData();
 
+    //First Challenge
     console.log(startingChallenge);
+    const firstAnswer = await submitAnswer(alchemicalSymbolsDecipher(firstChallengeCode));
+    console.log(firstAnswer);
+
+    
+}
+
+function alchemicalSymbolsDecipher(code) {
+    let metals = [];
+    const currentSymbols = [...code]; 
+
+    const alchemicalSymbols = {
+        "☽": "Silver",
+        "☿": "Quicksilver",
+        "♀": "Copper",
+        "☉": "Gold",
+        "♂": "Iron",
+        "♃": "Tin",
+        "♄": "Lead",
+    };
+
+    for (let i = 0; i < currentSymbols.length; i++) {
+        let symbol = currentSymbols[i];
+
+        if (alchemicalSymbols[symbol]) {
+            metals.push(alchemicalSymbols[symbol]); 
+        }
+    }
+
+    return metals;
 }
 
 async function fetchData() {
@@ -29,7 +61,7 @@ async function fetchData() {
 
 async function submitAnswer(userAnswer) {
     try {
-        const response = await fetch(`${POST}`, {
+        const response = await fetch(`${API}${POST}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
