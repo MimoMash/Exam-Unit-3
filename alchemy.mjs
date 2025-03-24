@@ -6,16 +6,61 @@ const startPlayer = "/start?player=";
 const POST = "/answer";
 
 const firstChallengeCode = "☉☿☽♂☉";
+const secondChallengeCode = "Still flows the Icy Lethe, Veiling all ’neath Eldritch Rime.";
 
 async function start() {
-    const startingChallenge = await fetchData();
+    const currentChallenge = await fetchData();
+    console.log(currentChallenge);
+
+    let challengesCompleted = {
+        firstChallenge: true,
+        secondChallenge: true,
+        thirdChallenge: false
+    }
 
     //First Challenge
-    console.log(startingChallenge);
-    const firstAnswer = await submitAnswer(alchemicalSymbolsDecipher(firstChallengeCode));
-    console.log(firstAnswer);
+    if(!challengesCompleted.firstChallenge) {
+        console.log(startingChallenge);
+        const firstAnswer = await submitAnswer(alchemicalSymbolsDecipher(firstChallengeCode));
+        console.log(firstAnswer);
+        if(firstAnswer.message === "Correct!") {
+            challengesCompleted.firstChallenge = true;
+        }
+    }
 
-    
+    //Second Challenge
+    if (!challengesCompleted.secondChallenge) {
+        console.log(poemDecipherer(secondChallengeCode));
+        const secondAnswer = await submitAnswer(poemDecipherer(secondChallengeCode));
+        console.log(secondAnswer);
+        if(secondAnswer.message === "Correct!") {
+            challengesCompleted.secondChallenge = true;
+        }
+    }
+}
+
+
+function poemDecipherer(poem) {
+    const capitalLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let secretMessage = [];
+
+    poem = poem.trim();
+
+    if (poem === "") {
+        return "";
+    }
+
+    poem = poem.split("");
+
+    for (let i = 0; i < poem.length; i++) {
+        if(capitalLetters.includes(poem[i])) {
+            secretMessage.push(poem[i])
+        }
+    }
+
+    secretMessage = secretMessage.join("");
+
+    return secretMessage;
 }
 
 function alchemicalSymbolsDecipher(code) {
