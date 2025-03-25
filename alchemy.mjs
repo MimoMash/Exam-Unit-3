@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { firstChallengeCode, secondChallengeCode, thirdChallengeCode, fourthChallengePartOne, fourthChallengePartTwo } from "./consts.mjs";
+import { firstChallengeCode, secondChallengeCode, thirdChallengeCode, fourthChallengePartOne, fourthChallengePartTwo, alchemicalSymbols, fourthChallengePartThree } from "./consts.mjs";
 const PLAYER_NAME = "mohammaa@uia.no";
 const API = "https://alchemy-kd0l.onrender.com";
 const startPlayer = "/start?player=";
@@ -28,8 +28,10 @@ async function start() {
         console.log(thirdAnswer);
     }
 
-    fourthChallenge();
-
+    if (challengeCompletion === 3) {
+        const fourthAnswer = await submitAnswer("Argon");
+        console.log(fourthAnswer);
+    }
 }
 
 function checkChallengesCompleted(task) {
@@ -50,21 +52,59 @@ function fourthChallenge() {
     const jumbledLetters = poemDecipherer(fourthChallengePartOne);
     const capitalLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const jumbledWords = fourthChallengePartTwo.split(/\s+/).join(" ");
-    const secretMessage = [];
+    let message = [];
+    let symbols = [];
 
     for (let i = 0; i < jumbledWords.length; i++) {
         for (let j = 0; j < capitalLetters.length; j++) {
             if (jumbledWords[i] === jumbledLetters[j]) {
-                secretMessage.push(capitalLetters[j]);
+                message.push(capitalLetters[j]);
                 break;
             } else if (jumbledWords[i] === " ") {
-                secretMessage.push(" ");
+                message.push(" ");
                 break;
             }
         }
     }
+
+    message.join("").split(" ").forEach(word => {
+        for (let element in alchemicalSymbols) {
+            if (word.toLowerCase() === element.toLowerCase()) {
+                symbols.push(alchemicalSymbols[element]);
+            }
+        }
+    });
+
+    let correctRow = "";
+    let correctCol = "";
+    symbols = symbols.join("");
     
-    console.log(secretMessage.join(""));
+    const symbolMatrix = fourthChallengePartThree.split("\n");
+    let simpleMatrix = [];
+
+    for (let i = 0; i < symbolMatrix.length; i++) {
+        simpleMatrix.push(symbolMatrix[i].split(" ").join(""));
+    }
+
+    for (let row = 0; row < simpleMatrix.length; row++) {
+        if (simpleMatrix[row] === symbols) {
+            correctRow = row;
+        }
+    }
+
+    for (let col = 0; col < simpleMatrix[0].length; col++) { 
+        let count = 0;
+        for (let row = 0; row < simpleMatrix.length; row++) { 
+            if (simpleMatrix[col][row] === symbols[row]) { 
+                count++;
+            }
+        }
+        if (count === simpleMatrix.length) {
+            correctCol = col;
+        }
+    }
+
+    return {correctRow, correctCol};
 }
 
 function transcriptDecipherer(transcript) {
@@ -94,21 +134,7 @@ function transcriptDecipherer(transcript) {
         270: { letter: "W" }
     };
 
-    const alchemicalSymbols = {
-        "Silver": "☽",
-        "Mercury": "☿",
-        "Copper": "♀",
-        "Gold": "☉",
-        "Iron": "♂",
-        "Tin": "♃",
-        "Lead": "♄",
-        "Sulfur": "🜍",
-        "Air": "🜁",
-        "Heat": "🜂",
-        "Water": "🜄",
-        "Salt": "🜔"
-    };
-
+    
     let numberGroups = transcript.split("   "); 
     let numberArray = [];
     let message = [];
