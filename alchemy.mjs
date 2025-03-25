@@ -27,7 +27,7 @@ async function start() {
         const thirdAnswer = await submitAnswer(transcriptDecipherer(thirdChallengeCode));
         console.log(thirdAnswer);
     }
-
+    //Fourth Challenge
     if (challengeCompletion === 3) {
         const fourthAnswer = await submitAnswer("Argon");
         console.log(fourthAnswer);
