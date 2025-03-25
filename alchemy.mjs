@@ -1,20 +1,11 @@
 import fetch from "node-fetch";
-
+import { firstChallengeCode, secondChallengeCode, thirdChallengeCode, fourthChallengePartOne, fourthChallengePartTwo } from "./consts.mjs";
 const PLAYER_NAME = "mohammaa@uia.no";
 const API = "https://alchemy-kd0l.onrender.com";
 const startPlayer = "/start?player=";
 const POST = "/answer";
 
-const firstChallengeCode = "☉☿☽♂☉";
-const secondChallengeCode = "Still flows the Icy Lethe, Veiling all ’neath Eldritch Rime.";
-const thirdChallengeCode = 
-    `\n' +
-    '\n' +
-    '\n' +
-    '17 20   20 9 17 24 4 34   24 127 127 1 8 8   17 20   17 10 1   34 1 46 17   48 24 45 12 17 ,   
-    4 34 9 45 17   17 10 1   2 20 23 38 45 12 24   2 20 23   17 10 1   17 10 1   2 20 45 23 17 10   1 12 1 38 1 34 17 ;   
-    127 20 38 29 4 34 1   38 1 23 127 45 23 108 ,   127 20 9 9 1 23   24 34 131   8 45 12 2 45 23   20 48 1 23   10 1 24 17 ,   
-    24 131 131   8 24 12 17   24 34 131   270 24 17 1 23 ,   4 34 2 45 8 1   5 20 12 131   17 10 23 20 45 5 10   24 4 23 '`;
+
 
 async function start() {
     const currentChallenge = await fetchData();
@@ -36,6 +27,9 @@ async function start() {
         const thirdAnswer = await submitAnswer(transcriptDecipherer(thirdChallengeCode));
         console.log(thirdAnswer);
     }
+
+    fourthChallenge();
+
 }
 
 function checkChallengesCompleted(task) {
@@ -49,6 +43,28 @@ function checkChallengesCompleted(task) {
     else if(task.includes("element that opens gates."))
         return 3;
     return -1;
+}
+
+function fourthChallenge() {
+
+    const jumbledLetters = poemDecipherer(fourthChallengePartOne);
+    const capitalLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const jumbledWords = fourthChallengePartTwo.split(/\s+/).join(" ");
+    const secretMessage = [];
+
+    for (let i = 0; i < jumbledWords.length; i++) {
+        for (let j = 0; j < capitalLetters.length; j++) {
+            if (jumbledWords[i] === jumbledLetters[j]) {
+                secretMessage.push(capitalLetters[j]);
+                break;
+            } else if (jumbledWords[i] === " ") {
+                secretMessage.push(" ");
+                break;
+            }
+        }
+    }
+    
+    console.log(secretMessage.join(""));
 }
 
 function transcriptDecipherer(transcript) {
